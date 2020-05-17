@@ -4,9 +4,9 @@ import requests
 from rest_framework.response import Response
 from django.shortcuts import redirect
 from rest_framework.decorators import api_view
-from .serializers.TokenRequestSerializer import TokenRequestSerializer
+from .serializers.OAuthTokenRequestSerializer import OAuthTokenRequestSerializer
 
-from OAuth.models import StravaAccount
+from .models import StravaAccount
 
 class OAuthController():
 
@@ -24,9 +24,9 @@ class OAuthController():
         authorization_code = request.GET.get('code')
 
         response = strava_account.get_token(code=authorization_code)
-        serializer = TokenRequestSerializer(data=response)
+        serializer = OAuthTokenRequestSerializer(data=response)
         if serializer.is_valid():
             serializer.save()
 
 
-        return Response(serializer.data)
+        return Response(serializer.initial_data)

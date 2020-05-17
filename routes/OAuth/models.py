@@ -23,6 +23,14 @@ class BaseOAuthModel(models.Model, OAuthMixin):
     auth_url = models.TextField()
 
 
+class StravaAthlete(models.Model):
+    strava_id = models.CharField(max_length=100)
+    strava_account_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    username = models.CharField(max_length=100)
+    premium = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
+
 class StravaAccount(BaseOAuthModel, OAuthMixin):
     class Meta:
         verbose_name = 'Strava Account'
@@ -36,7 +44,7 @@ class StravaAccount(BaseOAuthModel, OAuthMixin):
     refresh_url = urljoin(base_url, '/oauth/token')
     redirect_url = "http://localhost:8000/oauth/strava_token_exchange"
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(StravaAthlete, on_delete=models.CASCADE)
     client = OAuth2Session(client_id=int(client_id), client_secret=client_secret, scope="read")
 
     def create_authorization_url(self):
@@ -52,7 +60,7 @@ class StravaAccount(BaseOAuthModel, OAuthMixin):
         token = None
 
 class OAuthToken(models.Model):
-    # user = models.ForeignKey(User, unique=True, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, unique=True, on_delete=models.CASCADE)
     client_id = os.environ['STRAVA_CLIENT_ID']
     client_name = models.CharField(max_length=100)
     expires_at = models.DateTimeField()
