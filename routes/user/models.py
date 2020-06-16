@@ -2,35 +2,23 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from enum import IntEnum
 
-class Profile(models.Model):
-
-    class ProfileTypes(IntEnum):
-        ADMIN = 1
-        USER = 2
-
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-
-    profile_type_choices = [(key.value, key.name) for key in ProfileTypes]
-
-    first_name = models.CharField(max_length=100, blank=True, null=True)
-    last_name = models.CharField(max_length=100, blank=True, null=True)
-    type = models.IntegerField(choices=profile_type_choices, default=ProfileTypes.USER)
-
-    @receiver(post_save, sender=User)
-    def create_user_profile(sender, instance, created, **kwargs):
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
         if created:
             if instance.is_staff or instance.is_superuser:
-                Profile.objects.create(user=instance, type=1)
+                UserProfile.objects.create(user=instance)
             else:
-                Profile.objects.create(user=instance, type=2)
+                UserProfile.objects.create(user=instance)
 
+class UserProfile(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
 
-    @receiver(post_save, sender=User)
-    def save_user_profile(sender, instance, **kwargs):
-        instance.profile.save()
-
-
-class UserProfile(Profile):
-    pass
+class StravaAthlete(models.Model):
+    strava_id = models.CharField(max_length=100)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    user_profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, blank=True, null=True)
+    username = models.CharField(max_length=100)
+    premium = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now_add=True)

@@ -1,16 +1,14 @@
-import os
-from datetime import timedelta
-
-from django.db import models
-from django.urls import reverse
-from django.utils import timezone
-from urllib.parse import urljoin
 from authlib.integrations.requests_client import OAuth2Session
 from authlib.integrations.django_client import OAuth
+from django.contrib.auth.models import User
+
 oauth = OAuth()
 
+import os
+from django.conf import settings
+from django.db import models
+from user.models import StravaAthlete
 from OAuth.OAuthMixin import OAuthMixin
-from django.contrib.auth.models import User
 
 class BaseOAuthModel(models.Model, OAuthMixin):
     class Meta:
@@ -22,46 +20,9 @@ class BaseOAuthModel(models.Model, OAuthMixin):
     token_type = models.TextField()
     auth_url = models.TextField()
 
-
-class StravaAthlete(models.Model):
-    strava_id = models.CharField(max_length=100)
-    strava_account_id = models.ForeignKey(User, on_delete=models.CASCADE)
-    username = models.CharField(max_length=100)
-    premium = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now_add=True)
-
-class StravaAccount(BaseOAuthModel, OAuthMixin):
-    class Meta:
-        verbose_name = 'Strava Account'
-
-    client_id = os.environ['STRAVA_CLIENT_ID']
-    client_secret = os.environ['STRAVA_CLIENT_SECRET']
-
-    auth_url = "https://www.strava.com/oauth/authorize"
-    access_token_url = "https://www.strava.com/oauth/token"
-    base_url = "https://www.strava.com"
-    refresh_url = urljoin(base_url, '/oauth/token')
-    redirect_url = "http://localhost:8000/oauth/strava_token_exchange"
-
-    user = models.ForeignKey(StravaAthlete, on_delete=models.CASCADE)
-    client = OAuth2Session(client_id=int(client_id), client_secret=client_secret, scope="read")
-
-    def create_authorization_url(self):
-        return super().authorize(client=self.client, client_id=self.client_id, client_secret=self.client_secret, auth_url=self.auth_url, access_token_url=self.access_token_url, redirect_url=self.redirect_url)
-
-    def get_token(self, code):
-        authorization_response = super().authorize(client=self.client, client_id=self.client_id, client_secret=self.client_secret, auth_url=self.auth_url, access_token_url=self.access_token_url, redirect_url=self.redirect_url)
-
-        response = super().get_token(self.client, self.access_token_url, authorization_response, code=code, client_id=self.client_id, client_secret=self.client_secret)
-        return response
-
-    def create_token(self):
-        token = None
-
 class OAuthToken(models.Model):
-    user = models.ForeignKey(User, unique=True, on_delete=models.CASCADE)
-    client_id = os.environ['STRAVA_CLIENT_ID']
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    client_id = os.environ['STRAVA_CLIENT_ID'] #put in settings
     client_name = models.CharField(max_length=100)
     expires_at = models.DateTimeField()
     expires_in =  models.DateTimeField()
@@ -70,6 +31,36 @@ class OAuthToken(models.Model):
     access_token = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
+
+class StravaAccount(BaseOAuthModel, OAuthMixin):
+    class Meta:
+        verbose_name = 'Strava Account'
+
+    strava_athelete = models.ForeignKey(StravaAthlete, on_delete=models.CASCADE, blank=True, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    client = OAuth2Session(client_id=int(settings.STRAVA_CLIENT_ID),
+                           client_secret=settings.SOCIAL_AUTH_STRAVA_KEY,
+                           scope="read")
+
+    def create_authorization_url(self):
+        return super().authorize(client=self.client, client_id=settings.STRAVA_CLIENT_ID,
+                                 client_secret=settings.SOCIAL_AUTH_STRAVA_KEY,
+                                 auth_url=settings.STRAVA_AUTH_URL, access_token_url=settings.STRAVA_ACCESS_TOKEN_URL,
+                                 redirect_url= settings.STRAVA_REDIRECT_URL)
+
+    def get_token(self, code):
+        authorization_response = super().authorize(client=self.client, client_id=settings.STRAVA_CLIENT_ID,
+                                                   client_secret=settings.SOCIAL_AUTH_STRAVA_KEY,
+                                                   auth_url=settings.STRAVA_AUTH_URL,
+                                                   access_token_url=settings.STRAVA_ACCESS_TOKEN_URL,
+                                                   redirect_url= settings.STRAVA_REDIRECT_URL)
+
+        response = super().get_token(self.client, settings.STRAVA_ACCESS_TOKEN_URL, authorization_response, code=code,
+                                     client_id=settings.STRAVA_CLIENT_ID, client_secret=settings.SOCIAL_AUTH_STRAVA_KEY)
+        return response
+
+
+
 
 
 

@@ -31,10 +31,6 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'cycling.apps.CyclingConfig',
-    'OAuth.apps.OauthConfig',
-    'running.apps.RunningConfig',
-    'user.apps.UserConfig',
     'rest_framework',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -43,6 +39,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'social_django',
+    'cycling.apps.CyclingConfig',
+    'OAuth.apps.OauthConfig',
+    'running.apps.RunningConfig',
+    'user.apps.UserConfig',
 ]
 
 MIDDLEWARE = [
@@ -118,11 +118,19 @@ env = environ.Env(
 env.read_env()
 # env.read_env(env.str('ENV_PATH', '.env'))
 
+
 SOCIAL_AUTH_STRAVA_KEY = env('STRAVA_CLIENT_SECRET')
 SOCIAL_AUTH_STRAVA_SECRET = env('STRAVA_ACCESS_TOKEN')
 
 STRAVA_API_KEY =  env('STRAVA_CLIENT_SECRET')
 GMAPS_API_KEY = env('GMAPS_API_KEY')
+STRAVA_CLIENT_ID = os.environ['STRAVA_CLIENT_ID']
+
+STRAVA_AUTH_URL = "https://www.strava.com/oauth/authorize"
+STRAVA_ACCESS_TOKEN_URL = "https://www.strava.com/oauth/token"
+STRAVA_BASE_URL = "https://www.strava.com"
+STRAVA_REFRESH_URL = "https://www.strava.com/oauth/token"
+STRAVA_REDIRECT_URL = "http://localhost:8000/oauth/strava_token_exchange"
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
@@ -142,3 +150,4 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+

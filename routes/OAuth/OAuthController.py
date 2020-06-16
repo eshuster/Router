@@ -28,5 +28,4 @@ class OAuthController():
         if serializer.is_valid():
             serializer.save()
 
-
         return Response(serializer.initial_data)
