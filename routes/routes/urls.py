@@ -19,7 +19,7 @@ from django.conf.urls import include, url
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^routes/', include("cycling.urls")),
+    url(r'^cyroutes/', include("cycling.urls")),
     url(r'^oauth/', include("OAuth.urls")),
     url(r'^user/', include("user.urls"))
 ]

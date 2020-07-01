@@ -21,9 +21,15 @@ class BaseOAuthModel(models.Model, OAuthMixin):
     auth_url = models.TextField()
 
 class OAuthToken(models.Model):
+    class Meta:
+        verbose_name = 'OAuth Tokens'
+
+    def __str__(self):
+        return 'OAuthToken'
+
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     client_id = os.environ['STRAVA_CLIENT_ID'] #put in settings
-    client_name = models.CharField(max_length=100)
+    client_name = models.CharField(max_length=100, blank=True, null=True)
     expires_at = models.DateTimeField()
     expires_in =  models.DateTimeField()
     token_type = models.CharField(max_length=100)
@@ -34,7 +40,7 @@ class OAuthToken(models.Model):
 
 class StravaAccount(BaseOAuthModel, OAuthMixin):
     class Meta:
-        verbose_name = 'Strava Account'
+        verbose_name = 'Strava Accounts'
 
     strava_athelete = models.ForeignKey(StravaAthlete, on_delete=models.CASCADE, blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)

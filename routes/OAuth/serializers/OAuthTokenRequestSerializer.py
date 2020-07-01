@@ -3,17 +3,22 @@ from datetime import datetime, timedelta
 from rest_framework import serializers
 
 from ..models import OAuthToken
+from user.serializers import UserResponseSerializer
 
-class OAuthTokenRequestSerializer(serializers.Serializer):
+class OAuthTokenRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OAuthToken
+        fields = '__all__'
+
+    user = UserResponseSerializer
     token_type = serializers.CharField(max_length=100)
     refresh_token = serializers.CharField(max_length=100)
     access_token = serializers.CharField(max_length=100)
-    expires_in = serializers.IntegerField()
-    expires_at = serializers.IntegerField()
+    expires_in = serializers.DateTimeField()
+    expires_at = serializers.DateTimeField()
 
     def create(self, validated_data):
-        now = datetime.now()
-        validated_data['expires_in'] = now + timedelta(seconds=validated_data['expires_in'])
-        validated_data['expires_at'] = now + timedelta(seconds=validated_data['expires_at'])
         return OAuthToken.objects.create(**validated_data)
 
+    def update(self, instance, validated_data):
+        return instance

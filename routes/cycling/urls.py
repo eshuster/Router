@@ -1,6 +1,6 @@
 from django.urls import path
-from cycling.StravaRoutesController import StravaRoutes as strava_controller
+from cycling.StravaCyclingRoutesController import StravaCyclingRoutesController as strava_cycling_routes_controller
 
 urlpatterns = [
-    path('', strava_controller.as_view()),
+    path('', strava_cycling_routes_controller.as_view()),
 ]
