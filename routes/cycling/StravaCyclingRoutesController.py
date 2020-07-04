@@ -14,8 +14,8 @@ class StravaCyclingRoutesController(APIView):
         strava_api = StravaAPICalls()
 
         try:
-            strava_cycling_routes = strava_api.get_athlete_routes()
-        except:
+            strava_cycling_routes = strava_api.get_athlete_routes(request.user.id)
+        except Exception as e:
             return Response
 
         return Response(strava_cycling_routes)

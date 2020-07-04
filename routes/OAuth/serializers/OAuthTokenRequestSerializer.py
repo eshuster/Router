@@ -10,7 +10,7 @@ class OAuthTokenRequestSerializer(serializers.ModelSerializer):
         model = OAuthToken
         fields = '__all__'
 
-    user = UserResponseSerializer
+    user_id = serializers.CharField(max_length=100)
     token_type = serializers.CharField(max_length=100)
     refresh_token = serializers.CharField(max_length=100)
     access_token = serializers.CharField(max_length=100)

@@ -39,9 +39,7 @@ class OAuthController(APIView):
                          'expires_at': now + timedelta(seconds=response['expires_at'])})
 
         user = request.user
-        user_serializer = UserResponseSerializer.UserResponseSerializer(user)
-
-        serializer = OAuthTokenRequestSerializer(data=dict(user=user_serializer.data, **response))
+        serializer = OAuthTokenRequestSerializer(data=dict(user_id=user.id, **response))
 
         if serializer.is_valid():
             serializer.save()
