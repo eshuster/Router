@@ -1,11 +1,12 @@
 from django.conf.urls import include, url
 
-from OAuth.OAuthController import OAuthController as oauth_controller
+from account.controllers.StravaAccountController import StravaAuthorizationController as strava_auth_controller
+from account.controllers.StravaAccountController import StravaTokenExchangeController as strava_token_exchange_controller
 
 
 urlpatterns = [
-    url(r'^strava_token_exchange/$', oauth_controller.strava_token_exchange, name="strava_token_exchange"),
-    url(r'^strava_auth/$', oauth_controller.strava_auth, name="strava_auth"),
+    url(r'^strava_auth/$', strava_auth_controller.as_view(), name="strava_auth"),
+    url(r'^strava_token_exchange/$', strava_token_exchange_controller.as_view(), name="strava_token_exchange"),
 ]
 
 

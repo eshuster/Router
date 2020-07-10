@@ -3,16 +3,18 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view
 
+from django.shortcuts import redirect
 
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
 from django.contrib.auth import authenticate, login, logout
+from django.shortcuts import render
 
 from ..serializers.UserRequestSerializer import UserRequestSerializer
 
 class UserController(APIView):
-    authentication_classes = [SessionAuthentication, BasicAuthentication,]
-    permission_classes = [IsAuthenticated,]
+    authentication_classes = []
+    permission_classes = []
 
     def post(self, request):
         serializer = UserRequestSerializer(data=request.data)
@@ -22,9 +24,10 @@ class UserController(APIView):
         return Response(serializer.data)
 
     def get(self, request):
+        # return render(request, 'login.html')
         return Response("Done")
 
-    @api_view(['POST'])
+    @api_view(['GET','POST'])
     def user_login(request):
         # Like before, obtain the context for the user's request.
 
@@ -49,6 +52,8 @@ class UserController(APIView):
                     # We'll send the user back to the homepage.
                     login(request, user)
                     return Response('Logged In')
+                    # return redirect('/')
+
                 else:
                     # An inactive account was used - no logging in!
                     return Response("Your Rango account is disabled.")
@@ -69,3 +74,13 @@ class UserController(APIView):
     def user_logout(request):
         # Like before, obtain the context for the user's request.
         logout(request)
+        return Response("Logged Out")
+
+
+class UserLoginController(APIView):
+    def get(self, request):
+        return render(request, 'login.html')
+
+class UserLogoutController(APIView):
+    def get(self, request):
+        return render(request, 'login.html')

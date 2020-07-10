@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from ..models import StravaAthlete
+from athlete.models import StravaAthlete
 
 class StravaAthleteRequestSerializer(serializers.ModelSerializer):
     class Meta:

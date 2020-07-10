@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'OAuth.apps.OauthConfig',
     'running.apps.RunningConfig',
     'user.apps.UserConfig',
+    'athlete.apps.AthleteConfig',
+    'account.apps.AccountsConfig',
 ]
 
 MIDDLEWARE = [

@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from django.contrib.auth.models import User
-from ..serializers.StravaAthleteRequestSerializer import StravaAthleteRequestSerializer
+from user.serializers.StravaAthleteRequestSerializer import StravaAthleteRequestSerializer
 
 class StravaCyclingRoutesController(APIView):
     def post(self, request):
