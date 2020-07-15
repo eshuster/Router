@@ -26,6 +26,7 @@ SECRET_KEY = '7k)qz4t0gu#0u6$999!@39b(e8v+dl9&h7ftn!2hgmh3c#@t@b'
 DEBUG = True
 
 ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = ['testserver']
 
 
 # Application definition
@@ -63,6 +64,7 @@ AUTHENTICATION_BACKENDS = (
 
 
 ROOT_URLCONF = 'routes.urls'
+# ROOT_URLCONF = 'routes.routes.urls'
 
 TEMPLATES = [
     {
@@ -89,7 +91,7 @@ WSGI_APPLICATION = 'routes.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3')
     }
 }
 

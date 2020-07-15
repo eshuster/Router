@@ -2,13 +2,15 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view
+from rest_framework import status
 
 from django.shortcuts import redirect
-
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render
+
+from shared.responses import Responses
 
 from ..serializers.UserRequestSerializer import UserRequestSerializer
 
@@ -18,16 +20,19 @@ class UserController(APIView):
 
     def post(self, request):
         serializer = UserRequestSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
 
-        return Response(serializer.data)
+        if not serializer.is_valid():
+            return Responses.status_400(data=serializer.errors)
+
+        serializer.save()
+        return Responses.status_200(data=serializer.data)
+
 
     def get(self, request):
         # return render(request, 'login.html')
         return Response("Done")
 
-    @api_view(['GET','POST'])
+    @api_view(['POST'])
     def user_login(request):
         # Like before, obtain the context for the user's request.
 
@@ -51,30 +56,28 @@ class UserController(APIView):
                     # If the account is valid and active, we can log the user in.
                     # We'll send the user back to the homepage.
                     login(request, user)
-                    return Response('Logged In')
-                    # return redirect('/')
-
+                    return Responses.status_200(data=user)
                 else:
                     # An inactive account was used - no logging in!
-                    return Response("Your Rango account is disabled.")
+                    return Responses.status_403(data="Your account is disabled.")
             else:
                 # Bad login details were provided. So we can't log the user in.
                 print
                 "Invalid login details: {0}, {1}".format(username, password)
-                return Response("Invalid login details supplied.")
+                return Responses.status_400(data="Invalid login details supplied.")
 
         # The request is not a HTTP POST, so display the login form.
         # This scenario would most likely be a HTTP GET.
         else:
             # No context variables to pass to the template system, hence the
             # blank dictionary object...
-            return Response('Failed', {}, {})
+            return Responses.status_400('Failed')
 
     @api_view(['POST'])
     def user_logout(request):
         # Like before, obtain the context for the user's request.
         logout(request)
-        return Response("Logged Out")
+        return Responses.status_200(data="Logged Out")
 
 
 class UserLoginController(APIView):
