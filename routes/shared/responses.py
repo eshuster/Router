@@ -36,3 +36,13 @@ class Responses(Response):
     @classmethod
     def status_500(self):
         return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    # BAD_GATEWAY (Gateway receives invalid response from origin server, Domain name unresolvable)
+    @classmethod
+    def status_502(self):
+        return Response(status=status.HTTP_502_BAD_GATEWAY)
+
+    # SERVICE UNAVAILABLE
+    @classmethod
+    def status_503(self):
+        return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)

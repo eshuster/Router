@@ -1,29 +1,40 @@
 from rest_framework.views import APIView
-from rest_framework.response import Response
+import requests
 
 from ..services import StravaAccountAPICalls
+from athlete.models import StravaAthlete
+from shared.responses import Responses
 from OAuth.serializers.OAuthTokenRequestSerializer import OAuthTokenRequestSerializer
-
-from athlete.models import StravaAthlete, Athlete
+from shared.responses import Responses
 
 class StravaAuthorizationController(APIView):
     # generate link to connect to Strava
     def get(self, request):
         strava_account = StravaAccountAPICalls()
-        response = strava_account.create_authorization_url()
 
-        return Response(response)
+        try:
+            response = strava_account.create_authorization_url()
+        except requests.RequestException as e:
+            return Responses.status_503(data=e)
+
+        if response['stauts_code'] != 200:
+            return Responses.status_400(data=response)
+
+        return Responses.status_200(data=response)
 
 
 class StravaTokenExchangeController(APIView):
     # once linked is clicked, callback url is to here
     def get(self, request):
 
-
         strava_account = StravaAccountAPICalls()
         authorization_code = request.GET.get('code')
 
-        response = strava_account.get_token(code=authorization_code)
+        try:
+            response = strava_account.get_token(code=authorization_code)
+        except requests.RequestException as e:
+            return Responses.status_503(data=e)
+
         from datetime import datetime, timedelta
 
         now = datetime.now()
@@ -43,4 +54,4 @@ class StravaTokenExchangeController(APIView):
                 StravaAthlete.objects.create(**{'strava_id': response['athlete']['id'], 'athlete_id': athlete.id})
             serializer.save()
 
-        return Response(serializer.data)
+        return Responses.status_200(data=serializer.data)

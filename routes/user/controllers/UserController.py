@@ -11,7 +11,6 @@ from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render
 
 from shared.responses import Responses
-
 from ..serializers.UserRequestSerializer import UserRequestSerializer
 
 class UserController(APIView):
@@ -21,12 +20,11 @@ class UserController(APIView):
     def post(self, request):
         serializer = UserRequestSerializer(data=request.data)
 
-        if not serializer.is_valid():
-            return Responses.status_400(data=serializer.errors)
+        if serializer.is_valid():
+            serializer.save()
+            return Responses.status_200(data=serializer.data)
 
-        serializer.save()
-        return Responses.status_200(data=serializer.data)
-
+        return Responses.status_400(data=serializer.errors)
 
     def get(self, request):
         # return render(request, 'login.html')
