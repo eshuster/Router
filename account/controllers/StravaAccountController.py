@@ -1,27 +1,26 @@
 from rest_framework.views import APIView
+
 import requests
 
 from ..services import StravaAccountAPICalls
 from athlete.models import StravaAthlete
-from shared.responses import Responses
 from OAuth.serializers.OAuthSerializers import OAuthTokenRequestSerializer
 from shared.responses import Responses
 
-class StravaAuthorizationController(APIView):
+class StravaAuthorizationController(APIView, Responses):
     # generate link to connect to Strava
     def get(self, request):
         strava_account = StravaAccountAPICalls()
 
         try:
             response = strava_account.create_authorization_url()
+            return self.status_200(data=response)
         except requests.RequestException as e:
-            return Responses.status_503(data=e)
+            return self.status_503(data=e)
 
-        return Responses.status_400(data=response)
+        return self.status_400(data=response)
 
-
-
-class StravaTokenExchangeController(APIView):
+class StravaTokenExchangeController(APIView, Responses):
     # once linked is clicked, callback url is to here
     def get(self, request):
 
@@ -31,7 +30,7 @@ class StravaTokenExchangeController(APIView):
         try:
             response = strava_account.get_token(code=authorization_code)
         except requests.RequestException as e:
-            return Responses.status_503(data=e)
+            return self.status_503(data=e)
 
         from datetime import datetime, timedelta
 
@@ -48,8 +47,11 @@ class StravaTokenExchangeController(APIView):
 
             try:
                 strava_athlete = StravaAthlete.objects.get(athlete__user_id=request.user.id)
+                return self.status_200(data=serializer.data)
             except:
                 StravaAthlete.objects.create(**{'strava_id': response['athlete']['id'], 'athlete_id': athlete.id})
-            serializer.save()
 
-        return Responses.status_200(data=serializer.data)
+            serializer.save()
+            return self.status_200(data=serializer.data)
+
+        return self.status_400(data=serializer.errors)

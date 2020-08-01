@@ -1,12 +1,7 @@
-# import django
-# import os
-#
-# os.environ['DJANGO_SETTINGS_MODULE'] = 'routes.routes.settings'
-# django.setup()
-
 from rest_framework.test import APITestCase
 
 from django.contrib.auth.models import User
+
 
 class UserControllerTests(APITestCase):
     def setUp(self):
@@ -15,6 +10,8 @@ class UserControllerTests(APITestCase):
 	            password="Lola@2020!",
 	            email="testemail@gmail.com"
         )
+        self.user.set_password("Lola@2020!")
+        self.user.save()
 
     def test_create_user(self):
         data =  {
@@ -39,7 +36,7 @@ class UserControllerTests(APITestCase):
             "password": "Lola@2020!"
         }
 
-        res = self.client.post('/user/login/', data=data)
+        res = self.client.post('/user/login/', data=data, format='json')
 
         self.assertEqual(res.status_code, 200)
 

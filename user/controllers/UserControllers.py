@@ -1,38 +1,13 @@
 from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.decorators import api_view
-from rest_framework import status
-
-from django.shortcuts import redirect
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
 from django.contrib.auth import authenticate, login, logout
-from django.shortcuts import render
 
 from shared.responses import Responses
 from ..serializers.UserRequestSerializer import UserRequestSerializer
 from ..serializers.UserResponseSerializer import UserResponseSerializer
 
-class UserController(APIView):
-    authentication_classes = []
-    permission_classes = []
-
+class UserLoginController(APIView):
     def post(self, request):
-        serializer = UserRequestSerializer(data=request.data)
-
-        if serializer.is_valid():
-            serializer.save()
-            return Responses.status_200(data=serializer.data)
-
-        return Responses.status_400(data=serializer.errors)
-
-    def get(self, request):
-        # return render(request, 'login.html')
-        return Response("Done")
-
-    @api_view(['POST'])
-    def user_login(request):
         # Like before, obtain the context for the user's request.
 
         # If the request is a HTTP POST, try to pull out the relevant information.
@@ -73,17 +48,26 @@ class UserController(APIView):
             # blank dictionary object...
             return Responses.status_400('Failed')
 
-    @api_view(['POST'])
-    def user_logout(request):
+class UserLogoutController(APIView, Responses):
+    def post(self, request):
         # Like before, obtain the context for the user's request.
         logout(request)
-        return Responses.status_200(data="Logged Out")
+        return self.status_200(data="Logged Out")
 
+class UserController(APIView, Responses):
+    def post(self, request):
+        serializer = UserRequestSerializer(data=request.data)
 
-class UserLoginController(APIView):
-    def get(self, request):
-        return render(request, 'login.html')
+        if serializer.is_valid():
+            serializer.save()
+            return self.status_200(data=serializer.data)
 
-class UserLogoutController(APIView):
-    def get(self, request):
-        return render(request, 'login.html')
+        return self.status_400(data=serializer.errors)
+
+# class UserLoginController(APIView):
+#     def get(self, request):
+#         return render(request, 'login.html')
+#
+# class UserLogoutController(APIView):
+#     def get(self, request):
+#         return render(request, 'login.html')

@@ -1,14 +1,9 @@
-import os
-import requests
-
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from django.contrib.auth.models import User
-
 from user.serializers.StravaAthleteRequestSerializer import StravaAthleteRequestSerializer
 
-class StravaCyclingRoutesController(APIView):
+class StravaAthleteController(APIView):
     def post(self, request):
         strava_id = request.data['strava_id']
         user_id = request.data['user_id']

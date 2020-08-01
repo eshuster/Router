@@ -1,17 +1,16 @@
 from django.conf.urls import url
 from django.urls import path
 
-from .controllers.UserController import UserController
-from .controllers.UserController import UserLoginController
-from .controllers.UserController import UserLogoutController
+from .controllers.UserControllers import UserController
+from .controllers.UserControllers import UserLoginController
+from .controllers.UserControllers import UserLogoutController
 
 # from .views import UserController
 urlpatterns = [
     path('', UserController.as_view()),
-    url(r'^login/$', UserController.user_login, name="user_login"),
-    url(r'^login_page/$', UserLoginController.as_view(), name="user_login_page"),
-    url(r'^logout/$', UserController.user_logout, name="user_logout"),
-    url(r'^logout_page/$', UserLogoutController.as_view(), name="user_logout_page"),
-    url(r'^sathlete/$', UserController.user_login, name="create_strava_athlete"),
+    path('login/', UserLoginController.as_view(), name="user_login"),
+    # path('login_page/', UserLoginController.as_view(), name="user_login_page"),
+    path('logout/', UserLogoutController.as_view(), name="user_logout"),
+    # path('logout_page/', UserLogoutController.as_view(), name="user_logout_page"),
 ]
 
