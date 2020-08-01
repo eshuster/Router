@@ -42,16 +42,18 @@ class StravaTokenExchangeController(APIView, Responses):
         user = request.user
         serializer = OAuthTokenRequestSerializer(data=dict(user_id=user.id, **response))
 
-        if serializer.is_valid():
-            athlete = user.athlete
 
-            try:
-                strava_athlete = StravaAthlete.objects.get(athlete__user_id=request.user.id)
-                return self.status_200(data=serializer.data)
-            except:
-                StravaAthlete.objects.create(**{'strava_id': response['athlete']['id'], 'athlete_id': athlete.id})
+        if not serializer.is_valid():
+            return self.status_400(data=serializer.errors)
 
-            serializer.save()
-            return self.status_200(data=serializer.data)
+        serializer.save()
+        athlete = user.athlete
+        try:
+            strava_athlete = StravaAthlete.objects.get(athlete=athlete)
 
-        return self.status_400(data=serializer.errors)
+        except:
+            StravaAthlete.objects.create(**{'strava_id': response['athlete']['id'], 'athlete_id': athlete.id})
+
+
+        return self.status_200(data=serializer.data)
+
