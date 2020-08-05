@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'athlete.apps.AthleteConfig',
     'account.apps.AccountConfig',
     'shared.apps.SharedConfig',
+    'location.apps.LocationConfig',
 ]
 
 MIDDLEWARE = [
@@ -129,7 +130,7 @@ SOCIAL_AUTH_STRAVA_KEY = "c182492544cf54ecb419b3ecc384b197956ca40d" # env('STRAV
 SOCIAL_AUTH_STRAVA_SECRET = "2e4f4988394d4a9623c6a1d371338b57e9b8de02" # env('STRAVA_ACCESS_TOKEN')
 
 STRAVA_API_KEY =   "c182492544cf54ecb419b3ecc384b197956ca40d" # env('STRAVA_CLIENT_SECRET')
-# GMAPS_API_KEY = env('GMAPS_API_KEY')
+GMAPS_API_KEY = "AIzaSyBw9r3MAjAxc3JRmrNljqd_2n4fVobdEzs&=AIzaSyBvxfkviFFrQmLiRuBhg1IXowcksnLF3Ps" # env('GMAPS_API_KEY')
 STRAVA_CLIENT_ID = 41327 # os.environ['STRAVA_CLIENT_ID']
 
 STRAVA_AUTH_URL = "https://www.strava.com/oauth/authorize"
