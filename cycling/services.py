@@ -1,7 +1,7 @@
 import requests
 
 from OAuth.models import OAuthToken
-from athlete    .models import StravaAthlete
+from athlete.models import StravaAthlete
 
 class StravaAPICalls:
     def get_athlete_routes(self, user_id):

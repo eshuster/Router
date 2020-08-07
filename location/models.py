@@ -32,7 +32,7 @@ class Route(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
 
-class MapUnit(models.Model):
+class MapMeasurement(models.Model):
     class TypeChoices(models.IntegerChoices):
         Leg = 1
         Step = 2
